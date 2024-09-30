@@ -51,6 +51,7 @@ class TestFeatures(TestCase):
         data = [[0, 0], [0, 0], [1, 1], [1, 1]]
         expected = np.array([[-1., -1.], [-1., -1.], [1., 1.], [1., 1.]])
         scaler.fit(data)
+        result = scaler.transform(data)
         assert (result == expected).all(), "Scaler transform does not return expected values. Expect {}. Got: {}".format(expected.reshape(1,-1), result.reshape(1,-1))
         
     def test_standard_scaler_single_value(self):
@@ -60,8 +61,34 @@ class TestFeatures(TestCase):
         scaler.fit(data)
         result = scaler.transform([[2., 2.]]) 
         assert (result == expected).all(), "Scaler transform does not return expected values. Expect {}. Got: {}".format(expected.reshape(1,-1), result.reshape(1,-1))
+        
+    def test_standard_scaler_basic(self):
+        scaler = StandardScaler()
+        data = np.array([[1, 2, 3],
+                         [4, 5, 6],
+                         [7, 8, 9]])
 
-    # TODO: Add a test of your own below this line
+        scaler.fit(data)
+        result = scaler.transform(data)
+
+        # Check if the scaled values are zero-mean and unit variance
+        np.testing.assert_allclose(result.mean(axis=0), 0, atol=1e-10)
+        np.testing.assert_allclose(result.std(axis=0), 1, atol=1e-10)
+        
+        
+    def test_label_encoder_fit(self):
+        encoder = LabelEncoder()
+        data = ['Teacher', 'Doctor', 'Engineer', 'Salesperson','Teacher']
+        encoder.fit(data)
+        assert (encoder.classes_ == np.array(['Doctor', 'Engineer', 'Salesperson','Teacher'])).all(), f"The label encoder's classes are incorrect."
+
+    def test_label_encoder_transform(self):
+        encoder = LabelEncoder()
+        data = ['Elementary', 'Middle School','Elementary','Middle School', 'High School', 'College', 'Graduate School','School']
+        result = encoder.fit_transform(data)
+        expected = np.array([1, 4, 1, 4, 3, 0, 2, 5])
+        assert (result == expected).all(), "Transform does not correctly classify labels. Expect {}. Got:{}".format(expected, result)
+
     
 if __name__ == '__main__':
     unittest.main()
