@@ -102,7 +102,7 @@ class LabelEncoder:
         return self
     
     def transform(self, y):
-         """
+        """
         Transforms categorical labels to integer values.
 
         Args:
